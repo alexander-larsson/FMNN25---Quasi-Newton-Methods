@@ -1,5 +1,4 @@
 class OptimizationProblem:
-
     def __init__(self,objective_funcion,gradient):
         """
         Parameters:
