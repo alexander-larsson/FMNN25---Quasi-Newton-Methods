@@ -52,18 +52,18 @@ def get_gradient2(function,*point):
     zs = np.array([f(*x) for x in zip(*map(np.ravel,X))])
     Z = zs.reshape(X[0].shape)
     gx = np.gradient(Z,res,res)
-    result = [element[1][1] for element in gx]
+    result = [element[1][1] for element in reversed(gx)]
     return np.array(result)
 
 def get_hessian(function,x0,y0):
     """
-    Assumes 2-paramter function
+    Assumes 2-parameter function
     OMG this actually works!!!
     """
     res = .05
-    fx = get_gradient(function,x0,y0)
-    fxplush = get_gradient(function,x0+res,y0)
-    fyplush = get_gradient(function,x0,y0+res)
+    fx = get_gradient2(function,x0,y0)
+    fxplush = get_gradient2(function,x0+res,y0)
+    fyplush = get_gradient2(function,x0,y0+res)
     fplush = fxplush,fyplush
     hessian = np.empty((2,2))
     for i in range(2):
@@ -86,9 +86,9 @@ def manual_hessian(x,y):
     print(str(df_dxy(x,y)) + " " + str(df_dy2(x,y)))
 
 
-#test_hessian(1,2)
-#print(get_hessian(f,1,2))
-#manual_hessian(1,2)
+test_hessian(1,2)
+print(get_hessian(f,1,2))
+manual_hessian(1,2)
 
 print(get_gradient(f,1,2))
 
