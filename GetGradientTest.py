@@ -35,6 +35,26 @@ def get_gradient(function,x0,y0):
     gy,gx = np.gradient(Z,res,res)
     return gx[1][1],gy[1][1]
 
+def get_gradient2(function,*point):
+    """
+    Gradient for any kind of funtion
+    Parameters:
+    function = the function
+    point
+    """
+    res = .05
+    n = len(point)
+    x = np.empty((n,3))
+    for i in range(n):
+        xi = point[i]
+        x[i] = [xi-res,xi,xi+res]
+    X = np.meshgrid(*x)
+    zs = np.array([f(*x) for x in zip(*map(np.ravel,X))])
+    Z = zs.reshape(X[0].shape)
+    gx = np.gradient(Z,res,res)
+    result = [element[1][1] for element in gx]
+    return np.array(result)
+
 def get_hessian(function,x0,y0):
     """
     Assumes 2-paramter function
@@ -66,6 +86,11 @@ def manual_hessian(x,y):
     print(str(df_dxy(x,y)) + " " + str(df_dy2(x,y)))
 
 
-test_hessian(1,2)
-print(get_hessian(f,1,2))
-manual_hessian(1,2)
+#test_hessian(1,2)
+#print(get_hessian(f,1,2))
+#manual_hessian(1,2)
+
+print(get_gradient(f,1,2))
+
+print("Grad2 test:")
+print(get_gradient2(f,1,2))
