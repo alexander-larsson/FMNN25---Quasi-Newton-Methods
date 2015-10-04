@@ -42,7 +42,7 @@ def get_gradient2(function,*point):
     Gradient for any kind of funtion
     Parameters:
     function = the function
-    point
+    point = the point where we evaluate the gradient
     """
     res = .05
     n = len(point)
@@ -70,6 +70,28 @@ def get_hessian(function,x0,y0):
     hessian = np.empty((2,2))
     for i in range(2):
         for j in range(2):
+            hessian[i][j] = (fplush[j][i] - fx[i])/res
+    hessian = (hessian + np.transpose(hessian))/2
+    return hessian
+
+def get_hessian2(function, *point):
+    """
+    Calculates the hessian for any kind of function
+    Parameters:
+    function = the function
+    point = the point where we evaluate the hessian
+    """
+    res = .05
+    n = len(point)
+    fx = get_gradient2(function,*point)
+    fplush = []
+    for i in range(n):
+        p = list(point)
+        p[i] += res
+        fplush.append(get_gradient2(function,*p))
+    hessian = np.empty((n,n))
+    for i in range(n):
+        for j in range(n):
             hessian[i][j] = (fplush[j][i] - fx[i])/res
     hessian = (hessian + np.transpose(hessian))/2
     return hessian
@@ -117,11 +139,14 @@ def exact_line_search(function,x_values,s):
     return minimize_scalar(f_alpha).x_values
 
 
-test_hessian(1,2)
+#test_hessian(1,2)
 print(get_hessian(f,1,2))
-manual_hessian(1,2)
+#manual_hessian(1,2)
 
-print(get_gradient(f,1,2))
+#print("New hessian")
+print(get_hessian2(f,1,2))
 
-print("Grad2 test:")
-print(get_gradient2(f,1,2))
+#print(get_gradient(f,1,2))
+
+#print("Grad2 test:")
+#print(get_gradient2(f,1,2))
