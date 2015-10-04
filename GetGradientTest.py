@@ -1,5 +1,7 @@
 ## Functions to test on
 import numpy as np
+import scipy.linalg as la
+from scipy.optimize import minimize_scalar
 
 def f(x,y):
     return 100*(y-x**2)**2 + (1 - x)**2
@@ -84,6 +86,35 @@ def test_hessian(x,y):
 def manual_hessian(x,y):
     print(str(df_dx2(x,y)) + " " + str(df_dxy(x,y)))
     print(str(df_dxy(x,y)) + " " + str(df_dy2(x,y)))
+
+def test_positive_definiteness(function_degree,hessian,gradient):
+    """
+    Parameters:
+    function_degree = the function degree
+    hessian = the hessian matrix
+    gradient = the gradient
+
+    Raises an LinAlgError(according to the documentation of cho.) :
+    If the decomposition fails, for example, if a is not positive-definite.
+
+    """
+    factorized = la.cho_factor(gradient)
+    solution = la.cho_solve(factorized,function_degree)
+    return solution
+
+def exact_line_search(function,x_values,s):
+    """
+    Parameters:
+    function = the function
+    x_values = the values
+    s = newton direction
+
+    Determines alpha(k) by exact linear search(slide : 3.5)
+    """
+    def f_alpha(alpha):
+        return function(x_values+alpha*s)
+
+    return minimize_scalar(f_alpha).x_values
 
 
 test_hessian(1,2)
