@@ -138,6 +138,21 @@ def exact_line_search(function,x_values,s):
 
     return minimize_scalar(f_alpha).x_values
 
+def classic_newton_method(gradient,hessian):
+    x0 = 1; "initial guess, good guess??"
+    inverted_hessian = np.linalg.inv(hessian)
+    counter = 0;
+    counter_limit = 100000
+    while counter < counter_limit : "should be one more condition I guess"
+        x_next = x0 - alpha*inverted_hessian*gradient "just pseudo-code"
+
+        #update values, x,gradient,hessian...
+
+        counter = counter + 1;
+    if counter == counter_limit:
+        raise Exception("Reached limit, your doing it wrong")
+
+    # return something..
 
 #test_hessian(1,2)
 print(get_hessian(f,1,2))
