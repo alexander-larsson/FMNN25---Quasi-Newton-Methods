@@ -10,9 +10,6 @@ class OptimizationProblem:
         self.obj_func = objective_funcion
         self.om = OptimizationMethod(self.obj_func)
         self.grad = gradient
-        #if gradient is None:
-        #    self.grad = 
-        self.grad = gradient
     def get_gradient_at(self,*point):
         if self.grad is None:
             return self.om.get_gradient(self.obj_func, *point)
@@ -20,7 +17,5 @@ class OptimizationProblem:
         
     def get_hessian(self, *point):
         if self.grad is None:
-            print("Called none-hessian!")
             return self.om.get_hessian(self.obj_func, None, *point)
-        print("Called hessian!")
         return self.om.get_hessian(self.obj_func, self.grad, *point)

@@ -35,7 +35,6 @@ class OptimizationMethod:
     def get_hessian(self, function, grad, *point):
         res = .0000005
         n = len(point)
-        print("Optimization_method, point:", point)
         if grad is None:
             fx = self.get_gradient(function,*point)
         else:
