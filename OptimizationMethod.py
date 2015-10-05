@@ -9,8 +9,8 @@ class OptimizationMethod:
 
     def __init__(self,optimization_problem):
         self.problem = optimization_problem
-        
-    
+
+
     def get_gradient(self, function, *point):
         """
         Gradient for any kind of funtion
@@ -18,7 +18,7 @@ class OptimizationMethod:
         function = the function
         point = the point where we evaluate the gradient
         """
-        
+
         res = .000005
         n = len(point)
         x = np.empty((n,3))
@@ -29,10 +29,33 @@ class OptimizationMethod:
         zs = np.array([function(*x) for x in zip(*map(np.ravel,X))])
         Z = zs.reshape(X[0].shape)
         gx = np.gradient(Z,res,res)
+        # element[1][1] should maybe be something else
         result = [element[1][1] for element in reversed(gx)]
         return np.array(result)
-        
-    def get_hessian(self, function, grad, *point):
+
+    def get_hessian(self, function, *point):
+        """
+        Calculates the hessian for any kind of function
+        Parameters:
+        function = the function
+        point = the point where we evaluate the hessian
+        """
+        res = .0000005
+        n = len(point)
+        fx = self.get_gradient(function,*point)
+        fplush = []
+        for i in range(n):
+            p = list(point)
+            p[i] += res
+            fplush.append(self.get_gradient(function,*p))
+        hessian = np.empty((n,n))
+        for i in range(n):
+            for j in range(n):
+                hessian[i][j] = (fplush[j][i] - fx[i])/res
+        hessian = (hessian + np.transpose(hessian))/2
+        return hessian
+
+    def get_olle_hessian(self, function, grad, *point):
         res = .0000005
         n = len(point)
         if grad is None:

@@ -54,6 +54,7 @@ def get_gradient2(function,*point):
     zs = np.array([f(*x) for x in zip(*map(np.ravel,X))])
     Z = zs.reshape(X[0].shape)
     gx = np.gradient(Z,res,res)
+    # element[1][1] should maybe be something else (only tested for one function)
     result = [element[1][1] for element in reversed(gx)]
     return np.array(result)
 
@@ -109,7 +110,7 @@ def manual_hessian(x,y):
     print(str(df_dx2(x,y)) + " " + str(df_dxy(x,y)))
     print(str(df_dxy(x,y)) + " " + str(df_dy2(x,y)))
 
-def test_positive_definiteness(function_degree,hessian,gradient):
+def test_positive_definiteness(function_degree,hessian):
     """
     Parameters:
     function_degree = the function degree
@@ -120,7 +121,7 @@ def test_positive_definiteness(function_degree,hessian,gradient):
     If the decomposition fails, for example, if a is not positive-definite.
 
     """
-    factorized = la.cho_factor(gradient)
+    factorized = la.cho_factor(hessian)
     solution = la.cho_solve(factorized,function_degree)
     return solution
 
@@ -138,24 +139,8 @@ def exact_line_search(function,x_values,s):
 
     return minimize_scalar(f_alpha).x_values
 
-def classic_newton_method(gradient,hessian):
-    x0 = 1; "initial guess, good guess??"
-    inverted_hessian = np.linalg.inv(hessian)
-    counter = 0;
-    counter_limit = 100000
-    while counter < counter_limit : "should be one more condition I guess"
-        x_next = x0 - alpha*inverted_hessian*gradient "just pseudo-code"
-
-        #update values, x,gradient,hessian...
-
-        counter = counter + 1;
-    if counter == counter_limit:
-        raise Exception("Reached limit, your doing it wrong")
-
-    # return something..
-
 #test_hessian(1,2)
-print(get_hessian(f,1,2))
+#print(get_hessian(f,1,2))
 #manual_hessian(1,2)
 
 #print("New hessian")
