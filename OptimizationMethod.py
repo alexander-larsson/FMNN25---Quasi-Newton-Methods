@@ -48,7 +48,7 @@ class OptimizationMethod:
             if grad is None:
                 fplush.append(self.get_gradient(function,*p))
             else:
-                fplush.append([g(*point) for g in grad])
+                fplush.append([g(*p) for g in grad])
             #p[i] = old_p
         hessian = np.empty((n,n))
         for i in range(n):
