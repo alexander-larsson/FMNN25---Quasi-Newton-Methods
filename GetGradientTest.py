@@ -144,9 +144,8 @@ def exact_line_search(function,x_values,s):
 #manual_hessian(1,2)
 
 #print("New hessian")
-print(get_hessian2(f,1,2))
+#print(get_hessian2(f,1,2))
 
-#print(get_gradient(f,1,2))
-
-#print("Grad2 test:")
-#print(get_gradient2(f,1,2))
+point = (0,0)
+print(get_gradient2(f,*point))
+print(str(df_dx(*point)) + " " + str(df_dy(*point)))

@@ -5,27 +5,34 @@ from scipy.optimize import minimize_scalar
 class ClassicalNewton(OptimizationMethod):
 
     def solve(self):
-        # guess = exact_line_search(self.problem.obj_func,)
-        # replace this with line search
-        guess = np.array([1,1])
-        return self.classic_newton_method(guess)
+        return self.classic_newton_method()
 
-
-    def classic_newton_method(self,initial_guess):
+    def classic_newton_method(self):
         def gradient_is_zero(gradient):
             return np.allclose(gradient,np.zeros((1,len(gradient))))
 
-        xk = initial_guess
-        for _ in range(1000):
-            gradient = self.get_gradient(self.problem.obj_func,*xk)
-            hessian = self.get_hessian(self.problem.obj_func,*xk)
-            if gradient_is_zero(gradient):
-                return xk
+        def get_alpha_k(x_k, s_k):
+            f = self.problem.obj_func
+            alpha_k = 1
+            minimum = f(*x_k) # alpha = 0
+            for alpha in range(1,1000):
+                cand = f(*(x_k + alpha*s_k))
+                if cand < minimum:
+                    minimum = cand
+                    alpha_k = alpha
+            return alpha_k
 
+        x_k =  np.array([0,0]) #initial guess
+        for _ in range(1000):
+            gradient = self.get_gradient(self.problem.obj_func,*x_k)
+            hessian = self.get_hessian(self.problem.obj_func,*x_k)
+            if gradient_is_zero(gradient):
+                return x_k
             L = la.cholesky(hessian, lower=True)
-            sk = la.cho_solve((L,True),gradient)
-            xk = xk - sk
-        raise LinAlgError("Newtons method did not converge")
+            s_k = la.cho_solve((L,True),gradient)
+            alpha_k = get_alpha_k(x_k, s_k)
+            x_k = x_k - alpha_k*s_k
+        raise Exception("Newtons method did not converge")
 
     def exact_line_search(self,function,x_values,s):
         """
