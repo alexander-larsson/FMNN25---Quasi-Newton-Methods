@@ -36,32 +36,47 @@ class fTestCase(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
         self.man_hess = manual_hessian(1,2)
-    #Test of function without a supplied gradient
+        self.ros_res = (1,1)
     def testCalculatedGradient(self):
-	problem = OptimizationProblem(f);
+	problem = OptimizationProblem(f)
         op = ClassicalNewton(problem)
         gradient = op.get_gradient(f, (1,2))
-	print(gradient)
-	print(self.man_gradient)
         np.testing.assert_allclose(gradient, self.man_gradient)
-    #Test of function with a supplied gradient:
     def testSuppliedGradient(self):
-	problem = OptimizationProblem(f, grad);
-        op = ClassicalNewton(problem)
-        gradient = op.get_gradient(f, (1,2))
-        np.testing.assert_allclose(gradient, self.man_gradient)
-    #Testing the hessian without a supplied gradient
+		problem = OptimizationProblem(f, grad);
+		op = ClassicalNewton(problem)
+		gradient = op.get_gradient(f, (1,2))
+		np.testing.assert_allclose(gradient, self.man_gradient)
     def testHessianFunctionWithoutGradient(self):
-	problem = OptimizationProblem(f, grad);
-        op = ClassicalNewton(problem)
-        hessian = op.get_hessian(f, (1,2))
-        np.testing.assert_allclose(self.man_hess, hessian) # , 0.0001)
-    #Testing the hessian with a supplied gradient
+		problem = OptimizationProblem(f, grad)
+		op = ClassicalNewton(problem)
+		hessian = op.get_hessian(f, (1,2))
+		np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
     def testHessianFunctionWithGradient(self):
-	problem = OptimizationProblem(f, grad);
-        op = ClassicalNewton(problem)
-        hessian = op.get_hessian(f, (1,2))
-        np.testing.assert_allclose(self.man_hess, hessian) #, 0.0001)
+		problem = OptimizationProblem(f, grad);
+		op = ClassicalNewton(problem)
+		hessian = op.get_hessian(f, (1,2))
+		np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
+    def testRosenBrockWithStandardInitialGuess(self):
+		problem = OptimizationProblem(f)
+		op = ClassicalNewton(problem)
+		res = op.solve()
+		np.testing.assert_almost_equal(self.ros_res, res)
+    def testRosenBrockWithEasyInitialGuess(self):
+		problem = OptimizationProblem(f)
+		op = ClassicalNewton(problem)
+		res = op.solve((2,2))
+		np.testing.assert_almost_equal(self.ros_res, res)
+    def testRosenBrockWithHardInitialGuess(self):
+		problem = OptimizationProblem(f)
+		op = ClassicalNewton(problem)
+		res = op.solve((-1.2, 1))
+		np.testing.assert_almost_equal(self.ros_res, res)
+    def testRosenBrockWithHardInitialGuessAndSuppliedGradient(self):
+		problem = OptimizationProblem(f, grad)
+		op = ClassicalNewton(problem)
+		res = op.solve((-1.2, 1))
+		np.testing.assert_almost_equal(self.ros_res, res)
 
 if __name__=='__main__':
     ut.main()
