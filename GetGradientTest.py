@@ -125,19 +125,6 @@ def test_positive_definiteness(function_degree,hessian):
     solution = la.cho_solve(factorized,function_degree)
     return solution
 
-def exact_line_search(function,x_values,s):
-    """
-    Parameters:
-    function = the function
-    x_values = the values
-    s = newton direction
-
-    Determines alpha(k) by exact linear search(slide : 3.5)
-    """
-    def f_alpha(alpha):
-        return function(x_values+alpha*s)
-
-    return minimize_scalar(f_alpha).x_values
 
 #test_hessian(1,2)
 #print(get_hessian(f,1,2))
