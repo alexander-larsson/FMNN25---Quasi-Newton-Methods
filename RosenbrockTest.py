@@ -22,7 +22,7 @@ def df_dxy(x,y):
 
 def df_dy2(x,y):
     return 200
-    
+
 grad = [df_dx,df_dy]
 
 #problem = ClassicalNewton(f,grad)
