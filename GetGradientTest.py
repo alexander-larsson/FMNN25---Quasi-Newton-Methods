@@ -21,12 +21,9 @@ def df_dxy(x,y):
 def df_dy2(x,y):
     return 200
 
-## get_gradient(f,x,y) gives almost the same result as ( df_dy(x,y), df_dx(x,y) )
-
 def get_gradient(function,x0,y0):
     """
-    Only works for 2-paramter functions.
-    Might be able to generalize it.
+    Returns the gradient
     """
     res = .05
     x = np.array([x0-res,x0,x0+res])
@@ -60,8 +57,7 @@ def get_gradient2(function,*point):
 
 def get_hessian(function,x0,y0):
     """
-    Assumes 2-parameter function
-    OMG this actually works!!!
+    Returns the hessian
     """
     res = .05
     fx = get_gradient2(function,x0,y0)
@@ -109,21 +105,6 @@ def test_hessian(x,y):
 def manual_hessian(x,y):
     print(str(df_dx2(x,y)) + " " + str(df_dxy(x,y)))
     print(str(df_dxy(x,y)) + " " + str(df_dy2(x,y)))
-
-def test_positive_definiteness(function_degree,hessian):
-    """
-    Parameters:
-    function_degree = the function degree
-    hessian = the hessian matrix
-    gradient = the gradient
-
-    Raises an LinAlgError(according to the documentation of cho.) :
-    If the decomposition fails, for example, if a is not positive-definite.
-
-    """
-    factorized = la.cho_factor(hessian)
-    solution = la.cho_solve(factorized,function_degree)
-    return solution
 
 
 #test_hessian(1,2)
