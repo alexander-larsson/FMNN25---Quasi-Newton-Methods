@@ -41,6 +41,8 @@ class fTestCase(ut.TestCase):
 	problem = OptimizationProblem(f);
         op = ClassicalNewton(problem)
         gradient = op.get_gradient(f, (1,2))
+	print(gradient)
+	print(self.man_gradient)
         np.testing.assert_allclose(gradient, self.man_gradient)
     #Test of function with a supplied gradient:
     def testSuppliedGradient(self):
@@ -53,7 +55,7 @@ class fTestCase(ut.TestCase):
 	problem = OptimizationProblem(f, grad);
         op = ClassicalNewton(problem)
         hessian = op.get_hessian(f, (1,2))
-        np.testing.assert_allclose(self.man_hess, hessian) #, 0.0001)
+        np.testing.assert_allclose(self.man_hess, hessian) # , 0.0001)
     #Testing the hessian with a supplied gradient
     def testHessianFunctionWithGradient(self):
 	problem = OptimizationProblem(f, grad);
