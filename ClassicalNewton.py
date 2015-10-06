@@ -51,12 +51,12 @@ class ClassicalNewton(OptimizationMethod):
 
     def _create_f_alpha_(self, x_k,s_k):
         def points(alpha):
-            return self.problem.obj_func(*(x_k - alpha*s_k))
+            return self.problem.obj_func(*(x_k + alpha*s_k))
         return points
 
     def f_prim(self, f_alpha):
         def val(a):
-            res = 0.00005
+            res = 1
             return (f_alpha(a) + f_alpha(a + res)) / res
         return val
 
@@ -68,41 +68,43 @@ class ClassicalNewton(OptimizationMethod):
         a_0 = 1
         f_alpha = self._create_f_alpha_(x_k,s_k)
         f_grad = self.f_prim(f_alpha)
-        def extrapolation(a_l,a_0):
+        def extrapolation(a_0,a_l):
             return ((a_0 - a_l)*f_grad(a_0)) / (f_grad(a_l) - f_grad(a_0))
-        def interpolation(a_l,a_0):
+        def interpolation(a_0,a_l):
             gradient_l = f_grad(a_l)
             f_l = f_alpha(a_l)
             f_0 = f_alpha(a_0)
             return (((a_0 - a_l)**2) * gradient_l) / (2*( f_l - f_0 + (a_0-a_l)*gradient_l))
 
         def LC(a_0, a_l):
-            """
-            print("f_alpha(a_0 = ", f_alpha(a_0))
-            print("a_l = ", a_l)
-            print("a_0 = ", a_0)
-            print("f_grad(a_l) = ", f_grad(a_l))
-            """
-            return f_alpha(a_0) >= f_alpha(a_l) + (1-rho)*(a_0 - a_l)*f_grad(a_l)
+            print("LC: f_alpha(a_0) = ", f_alpha(a_0))
+            print("LC: f_alpha(a_l) = ", f_alpha(a_l))
+            print("LC: f_grad(a_l) = ", f_grad(a_l))
+            print("LC: stuff = ", (1-rho)*(a_0 - a_l)*f_grad(a_l))
+            print("LC: other stuff = ", f_alpha(a_l) + ((1-rho)*(a_0 - a_l)*f_grad(a_l)))
+            return f_alpha(a_0) >= f_alpha(a_l) + ((1-rho)*(a_0 - a_l)*f_grad(a_l))
             
         def RC(a_0, a_l):
             return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
         a_l = 0 #This works if it's at one but not if it's at zero. It should be a zero. =(
         a_u = 10**99
         lc = LC(a_0, a_l) 
-        rc = RC(a_0, a_l) 
+        rc = RC(a_0, a_l)
         while not (lc and rc):
-            if lc:
-                d_alpha_0 = extrapolation(a_l, a_0)
+            if lc: 
+                print("LC")
+                d_alpha_0 = extrapolation(a_0, a_l)
                 d_alpha_0 = max(d_alpha_0,tau*(a_0 - a_l))
                 d_alpha_0 = min(d_alpha_0,chi*(a_0 - a_l))
                 a_l = a_0
                 a_0 = a_0 + d_alpha_0
             else:
+                print("RC")
                 a_u = min(a_0, a_u)
-                str_alpha_0 = interpolation(a_l, a_0)
+                str_alpha_0 = interpolation(a_0, a_l)
                 str_alpha_0 = max(str_alpha_0, (a_l + tau*(a_u - a_l)))
                 str_alpha_0 = min(str_alpha_0, (a_u - tau*(a_u - a_l)))
+                print("str_alpha_0 = ", str_alpha_0)
                 a_0 = str_alpha_0
             lc = LC(a_0, a_l) 
             rc = RC(a_0, a_l) 

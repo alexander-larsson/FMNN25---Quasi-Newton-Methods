@@ -6,7 +6,7 @@ import unittest as ut
 from ClassicalNewton import *
 from OptimizationProblem import *
 def f(x,y):
-    return 100*(y-x**2)**2 + (1 - x)**2
+    return 100*((y-(x**2))**2) + ((1 - x)**2)
 
 def df_dx(x,y):
     return 400*(x**3) - 400*x*y - 2 + 2*x
