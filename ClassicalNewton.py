@@ -1,13 +1,14 @@
 from OptimizationMethod import *
 import scipy.linalg as la
+import inspect
 from scipy.optimize import minimize_scalar
 
 class ClassicalNewton(OptimizationMethod):
 
-    def solve(self):
-        return self.classic_newton_method()
+    def solve(self, initial_guess=None):
+        return self.classic_newton_method(initial_guess)
 
-    def classic_newton_method(self):
+    def classic_newton_method(self, initial_guess):
         def gradient_is_zero(gradient):
             return np.allclose(gradient,np.zeros((1,len(gradient))))
 
@@ -15,18 +16,23 @@ class ClassicalNewton(OptimizationMethod):
 		
             f = self.problem.obj_func
             alpha_k = 1
-            minimum = f(*x_k) # alpha = 0
-            print(minimum)
+            minimum = f(*(x_k + s_k)) # alpha = 1
             for alpha in range(1,1000):
-                cand = f(*(x_k + alpha*s_k))
+                cand = f(*(x_k)) # + alpha*s_k))
                 if cand < minimum:
                     minimum = cand
                     alpha_k = alpha
             return alpha_k
-
-        x_k =  np.array([1,0]) #initial guess
+	if initial_guess is None:
+		x_k = np.zeros(self.problem.obj_func.func_code.co_argcount) 
+	else:
+		x_k = initial_guess
+	gradient = []
         for _ in range(1000):
-            gradient = self.get_gradient(self.problem.obj_func,x_k)
+	    if self.problem.grad is None:
+	            gradient = self.get_gradient(self.problem.obj_func,x_k)
+	    else:
+                    gradient = [g(*x_k) for g in self.problem.grad]  
             hessian = self.get_hessian(self.problem.obj_func,x_k)
             if gradient_is_zero(gradient):
                 return x_k

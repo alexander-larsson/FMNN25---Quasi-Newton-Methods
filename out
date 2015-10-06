@@ -1,0 +1,45 @@
+.FF.
+======================================================================
+FAIL: testHessianFunctionWithGradient (__main__.fTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "RosenbrockTest.py", line 64, in testHessianFunctionWithGradient
+    np.testing.assert_allclose(self.man_hess, hessian) #, 0.0001)
+  File "/usr/lib/python2.7/dist-packages/numpy/testing/utils.py", line 1183, in assert_allclose
+    verbose=verbose, header=header)
+  File "/usr/lib/python2.7/dist-packages/numpy/testing/utils.py", line 644, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Not equal to tolerance rtol=1e-07, atol=0
+
+(mismatch 100.0%)
+ x: array([[ 402, -400],
+       [-400,  200]])
+ y: array([[ 402.00234253, -399.99576984],
+       [-399.99861201,  199.99788492]])
+
+======================================================================
+FAIL: testHessianFunctionWithoutGradient (__main__.fTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "RosenbrockTest.py", line 58, in testHessianFunctionWithoutGradient
+    np.testing.assert_allclose(self.man_hess, hessian) # , 0.0001)
+  File "/usr/lib/python2.7/dist-packages/numpy/testing/utils.py", line 1183, in assert_allclose
+    verbose=verbose, header=header)
+  File "/usr/lib/python2.7/dist-packages/numpy/testing/utils.py", line 644, in assert_array_compare
+    raise AssertionError(msg)
+AssertionError: 
+Not equal to tolerance rtol=1e-07, atol=0
+
+(mismatch 100.0%)
+ x: array([[ 402, -400],
+       [-400,  200]])
+ y: array([[ 402.00234253, -399.99576984],
+       [-399.99861201,  199.99788492]])
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.008s
+
+FAILED (failures=2)
+[-399.99999999  200.        ]
+[-400, 200]
