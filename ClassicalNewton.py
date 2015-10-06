@@ -15,15 +15,16 @@ class ClassicalNewton(OptimizationMethod):
         #x_k =  np.array([1,0]) #initial guess
         if initial_guess is None:
             x_k = np.zeros(self.problem.obj_func.func_code.co_argcount) 
-#            x_k[0] = 1
+#           x_k[0] = 1
         else:
+            print("Initial guess not zero!")
             x_k = np.array(initial_guess)
-
+        gradient = []
+        if self.problem.grad is None:
+            gradient = self.get_gradient(self.problem.obj_func,x_k)
+        else:
+            gradient = [g(*x_k) for g in self.problem.grad]
         for _ in range(1000):
-    	    if self.problem.grad is None:
-                gradient = self.get_gradient(self.problem.obj_func,x_k)
-    	    else:
-                gradient = [g(*x_k) for g in self.problem.grad]
             hessian = self.get_hessian(self.problem.obj_func,x_k)
             if gradient_is_zero(gradient):
                 return x_k
@@ -31,8 +32,8 @@ class ClassicalNewton(OptimizationMethod):
             s_k = la.cho_solve((L,True),gradient)
             alpha_k = self.inexact_line_search(x_k, s_k, self.problem.grad)
             print("alpha_k = ", alpha_k)
-            #print("s_k = ", s_k)
             x_k = x_k - alpha_k*s_k
+            gradient = self.get_gradient(self.problem.obj_func,x_k)
         raise Exception("Newtons method did not converge")
 
 
@@ -40,7 +41,6 @@ class ClassicalNewton(OptimizationMethod):
         f = self.problem.obj_func
         alpha_k = 1
         minimum = f(*(x_k - s_k)) # alpha = 1
-        #print(minimum)
         for alpha in range(1,1000):
             cand = f(*(x_k - alpha*s_k))
             if cand < minimum:
@@ -56,7 +56,8 @@ class ClassicalNewton(OptimizationMethod):
 
     def f_prim(self, f_alpha):
         def val(a):
-            return f_alpha(a)
+            res = 0.00005
+            return (f_alpha(a) + f_alpha(a + res)) / res
         return val
 
     def inexact_line_search(self, x_k, s_k, grad):
@@ -86,11 +87,12 @@ class ClassicalNewton(OptimizationMethod):
             
         def RC(a_0, a_l):
             return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
-        a_l = 0
+        a_l = 1 #This works if it's at one but not if it's at zero. It should be a zero. =(
         a_u = 10**99
         lc = LC(a_0, a_l) 
         rc = RC(a_0, a_l) 
         while not (lc and rc):
+            print("Loop!")
             if LC:
                 d_alpha_0 = extrapolation(a_l, a_0)
                 d_alpha_0 = max(d_alpha_0,tau*(a_0 - a_l))

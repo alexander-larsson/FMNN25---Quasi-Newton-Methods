@@ -19,23 +19,23 @@ class separateTestCase(ut.TestCase):
     #Test Goldstein
     def testGoldsteinConditionsWithSuppliedGradientOne(self):
         problem = OptimizationProblem(f, grad)
-        op = ClassicalNewton(Problem)
-        actual = op.solve(0.1)
+        op = ClassicalNewton(problem)
+        actual = op.solve((0.1))
         self.assert_almost_equal(expected, actual, 0.0001)
     def testGoldsteinConditionsWithSuppliedGradientTwo(self):
         problem = OptimizationProblem(f, grad)
-        op = ClassicalNewton(Problem)
-        actual = op.solve(1)
+        op = ClassicalNewton(problem)
+        actual = op.solve((1))
         self.assert_almost_equal(expected, actual, 0.0001)
     def testGoldsteinConditionsWithoutSuppliedGradientOne(self):
         problem = OptimizationProblem(f)
-        op = ClassicalNewton(Problem)
-        actual = op.solve(0.1)
+        op = ClassicalNewton(problem)
+        actual = op.solve((0.1))
         self.assert_almost_equal(expected, actual, 0.0001)
     def testGoldsteinConditionsWithSuppliedGradientTwo(self):
         problem = OptimizationProblem(f, grad)
-        op = ClassicalNewton(Problem)
-        actual = op.solve(1)
+        op = ClassicalNewton(problem)
+        actual = op.solve((1))
         self.assert_almost_equal(expected, actual, 0.0001)
 
     #Test Wolfstein

@@ -45,13 +45,11 @@ class OptimizationMethod:
         fplush = []
         for i in range(n):
             p = list(point)
-            old_p = p[i]
             p[i] += res
             if grad is None:
                 fplush.append(self.get_gradient(function,p))
             else:
                 fplush.append([g(p) for g in grad])
-            p[i] = old_p
         hessian = np.empty((n,n))
         for i in range(n):
             for j in range(n):
