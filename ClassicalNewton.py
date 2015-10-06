@@ -24,8 +24,8 @@ class ClassicalNewton(OptimizationMethod):
 
         x_k =  np.array([0,0]) #initial guess
         for _ in range(1000):
-            gradient = self.get_gradient(self.problem.obj_func,*x_k)
-            hessian = self.get_hessian(self.problem.obj_func,*x_k)
+            gradient = self.get_gradient(self.problem.obj_func,x_k)
+            hessian = self.get_hessian(self.problem.obj_func,x_k)
             if gradient_is_zero(gradient):
                 return x_k
             L = la.cholesky(hessian, lower=True)

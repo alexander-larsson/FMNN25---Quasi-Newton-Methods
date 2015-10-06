@@ -11,7 +11,7 @@ class OptimizationMethod:
         self.problem = optimization_problem
 
 
-    def get_gradient(self, function, *point):
+    def get_gradient(self, function, point):
         """
         Gradient for any kind of funtion
         Parameters:
@@ -32,45 +32,44 @@ class OptimizationMethod:
         # element[1][1] should maybe be something else
         result = [element[1][1] for element in reversed(gx)]
         return np.array(result)
+	"""
+    def get_hessian(self, function, point):
 
-    def get_hessian(self, function, *point):
-        """
         Calculates the hessian for any kind of function
         Parameters:
         function = the function
         point = the point where we evaluate the hessian
-        """
         res = .0000005
         n = len(point)
-        fx = self.get_gradient(function,*point)
+        fx = self.get_gradient(function,point)
         fplush = []
         for i in range(n):
             p = list(point)
             p[i] += res
-            fplush.append(self.get_gradient(function,*p))
+            fplush.append(self.get_gradient(function,p))
         hessian = np.empty((n,n))
         for i in range(n):
             for j in range(n):
                 hessian[i][j] = (fplush[j][i] - fx[i])/res
         hessian = (hessian + np.transpose(hessian))/2
         return hessian
-
-    def get_olle_hessian(self, function, grad, *point):
+        """
+    def get_hessian(self, function, point, grad=None):
         res = .0000005
         n = len(point)
         if grad is None:
-            fx = self.get_gradient(function,*point)
+            fx = self.get_gradient(function,point)
         else:
-            fx = [g(*point) for g in grad]
+            fx = [g(point) for g in grad]
         fplush = []
         for i in range(n):
             p = list(point)
             #old_p = p[i]
             p[i] += res
             if grad is None:
-                fplush.append(self.get_gradient(function,*p))
+                fplush.append(self.get_gradient(function,p))
             else:
-                fplush.append([g(*p) for g in grad])
+                fplush.append([g(p) for g in grad])
             #p[i] = old_p
         hessian = np.empty((n,n))
         for i in range(n):
