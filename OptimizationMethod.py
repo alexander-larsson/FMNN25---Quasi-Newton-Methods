@@ -26,7 +26,9 @@ class OptimizationMethod:
             xi = point[i]
             x[i] = [xi-res,xi,xi+res]
         X = np.meshgrid(*x)
+        
         zs = np.array([function(*x) for x in zip(*map(np.ravel,X))])
+        
         Z = zs.reshape(X[0].shape)
         gx = np.gradient(Z,res,res)
         # element[1][1] should maybe be something else

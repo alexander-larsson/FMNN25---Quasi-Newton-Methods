@@ -12,19 +12,26 @@ class ClassicalNewton(OptimizationMethod):
         def gradient_is_zero(gradient):
             return np.allclose(gradient,np.zeros((1,len(gradient))))
 
-        x_k =  np.array([1,0]) #initial guess
+        #x_k =  np.array([1,0]) #initial guess
+        if initial_guess is None:
+            x_k = np.zeros(self.problem.obj_func.func_code.co_argcount) 
+#            x_k[0] = 1
+        else:
+            x_k = np.array(initial_guess)
 
         for _ in range(1000):
-	    if self.problem.grad is None:
-	            gradient = self.get_gradient(self.problem.obj_func,x_k)
-	    else:
-                    gradient = [g(*x_k) for g in self.problem.grad]
+    	    if self.problem.grad is None:
+                gradient = self.get_gradient(self.problem.obj_func,x_k)
+    	    else:
+                gradient = [g(*x_k) for g in self.problem.grad]
             hessian = self.get_hessian(self.problem.obj_func,x_k)
             if gradient_is_zero(gradient):
                 return x_k
             L = la.cholesky(hessian, lower=True)
             s_k = la.cho_solve((L,True),gradient)
-            alpha_k = self.exact_line_search(x_k, s_k)
+            alpha_k = self.inexact_line_search(x_k, s_k, self.problem.grad)
+            print("alpha_k = ", alpha_k)
+            #print("s_k = ", s_k)
             x_k = x_k - alpha_k*s_k
         raise Exception("Newtons method did not converge")
 
@@ -32,69 +39,71 @@ class ClassicalNewton(OptimizationMethod):
     def exact_line_search(self,x_k, s_k):
         f = self.problem.obj_func
         alpha_k = 1
-        minimum = f(*(x_k + s_k)) # alpha = 1
-        print(minimum)
+        minimum = f(*(x_k - s_k)) # alpha = 1
+        #print(minimum)
         for alpha in range(1,1000):
-            cand = f(*(x_k + alpha*s_k))
+            cand = f(*(x_k - alpha*s_k))
             if cand < minimum:
                 minimum = cand
                 alpha_k = alpha
         return alpha_k
 
 
-    def _create_f_alpha_(self,x_k,s_k):
+    def _create_f_alpha_(self, x_k,s_k):
         def points(alpha):
-            return x_k + alpha*s_k
+            return self.problem.obj_func(*(x_k - alpha*s_k))
         return points
 
+    def f_prim(self, f_alpha):
+        def val(a):
+            return f_alpha(a)
+        return val
 
-
-    def inexact_line_search(self, x_k, s_k):
+    def inexact_line_search(self, x_k, s_k, grad):
         rho = 0.1
         sigma = 0.7
         tau = 0.1
         chi = 9
-        get_alpha_points = self._create_f_alpha_(x_k,s_k)
-        def extrapolation( alpha_l,alpha_0):
-            gradient_0 = self.get_gradient(self.problem.obj_func, get_alpha_points(alpha_0))
-            gradient_l = self.get_gradient(self.problem.obj_func, get_alpha_points(alpha_l))
-            return (alpha_0 - alpha_l)* gradient_0 / ( gradient_l - gradient_0 )
+        a_0 = 1
+        f_alpha = self._create_f_alpha_(x_k,s_k)
+        f_grad = self.f_prim(f_alpha)
+        def extrapolation(a_l,a_0):
+            return ((a_0 - a_l)*f_grad(a_0)) / (f_grad(a_l) - f_grad(a_0))
+        def interpolation(a_l,a_0):
+            gradient_l = f_grad(a_l)
+            f_l = f_alpha(a_l)
+            f_0 = f_alpha(a_0)
+            return (((a_0 - a_l)**2) * gradient_l) / (2*( f_l - f_0 + (a_0-a_l)*gradient_l))
 
-        def interpolation(self, alpha_l,alpha_0):
-            gradient_0 = self.get_gradient(self.problem.obj_func, get_alpha_points(alpha_0))
-            gradient_l = self.get_gradient(self.problem.obj_func, get_alpha_points(alpha_l))
-            f_l = self.problem.obj_func(get_alpha_points(alpha_l))
-            f_0 = self.problem.obj_func(get_alpha_points(alpha_0))
-            return (alpha_0 - alpha_l)**2 * gradient_0 / 2*( f_l - f_0 + (alpha_0-alpha_l)*gradient_l )
-
-        def block1(alpha_l,  alpha_0 , alpha_u):
-            d_alpha_0 = extrapolation(alpha_l, alpha_0)
-            d_alpha_0 = max(d_alpha_0,tau*(alpha_0 - alpha_l))
-            d_alpha_0 = min(d_alpha_0,chi*(alpha_0 - alpha_l))
-            alpha_l = alpha_0
-            alpha_0 = alpha_0 + d_alpha_0
-            return alpha_l, alpha_0, alpha_u
-        def block2(alpha_l,  alpha_0 ,alpha_u):
-            alpha_u = min(alpha_0, alpha_u)
-            str_alpha_0 = interpolation(alpha_l, alpha_0)
-            str_alpha_0 = max( str_alpha_0, alpha_l + tau*(alpha_u - alpha_l) )
-            str_alpha_0 = min( str_alpha_0, alpha_u - tau*(alpha_u - alpha_l) )
-            alpha_0 = str_alpha_0
-            return alpha_l, alpha_0, alpha_u
-        def LC():
-            return false
-        def RC():
-            return false
-
-
-        LC = ...
-        RC = ...
-
-        while not (LC and RC):
+        def LC(a_0, a_l):
+            """
+            print("f_alpha(a_0 = ", f_alpha(a_0))
+            print("a_l = ", a_l)
+            print("a_0 = ", a_0)
+            print("f_grad(a_l) = ", f_grad(a_l))
+            """
+            return f_alpha(a_0) >= f_alpha(a_l) + (1-rho)*(a_0 - a_l)*f_grad(a_l)
+            
+        def RC(a_0, a_l):
+            return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
+        a_l = 0
+        a_u = 10**99
+        lc = LC(a_0, a_l) 
+        rc = RC(a_0, a_l) 
+        while not (lc and rc):
             if LC:
-                block1
+                d_alpha_0 = extrapolation(a_l, a_0)
+                d_alpha_0 = max(d_alpha_0,tau*(a_0 - a_l))
+                d_alpha_0 = min(d_alpha_0,chi*(a_0 - a_l))
+                a_l = a_0
+                a_0 = a_0 + d_alpha_0
             else:
-                block2
-
-            compute stuff
-        retrun alpha_0 and f(alpha_0)
+                a_u = min(alpha_0, alpha_u)
+                str_alpha_0 = interpolation(alpha_l, alpha_0)
+                str_alpha_0 = max(str_alpha_0, (a_l + tau*(a_u - a_l)))
+                str_alpha_0 = min(str_alpha_0, (a_u - tau*(a_u - a_l)))
+                a_0 = str_alpha_0
+            lc = LC(a_0, a_l) 
+            rc = RC(a_0, a_l) 
+        #print("Return from inexact line_search: ", a_0," - ", get_alpha_points(a_0)) 
+        return a_0 #get_alpha_points(a_0)
