@@ -87,25 +87,23 @@ class ClassicalNewton(OptimizationMethod):
             
         def RC(a_0, a_l):
             return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
-        a_l = 1 #This works if it's at one but not if it's at zero. It should be a zero. =(
+        a_l = 0 #This works if it's at one but not if it's at zero. It should be a zero. =(
         a_u = 10**99
         lc = LC(a_0, a_l) 
         rc = RC(a_0, a_l) 
         while not (lc and rc):
-            print("Loop!")
-            if LC:
+            if lc:
                 d_alpha_0 = extrapolation(a_l, a_0)
                 d_alpha_0 = max(d_alpha_0,tau*(a_0 - a_l))
                 d_alpha_0 = min(d_alpha_0,chi*(a_0 - a_l))
                 a_l = a_0
                 a_0 = a_0 + d_alpha_0
             else:
-                a_u = min(alpha_0, alpha_u)
-                str_alpha_0 = interpolation(alpha_l, alpha_0)
+                a_u = min(a_0, a_u)
+                str_alpha_0 = interpolation(a_l, a_0)
                 str_alpha_0 = max(str_alpha_0, (a_l + tau*(a_u - a_l)))
                 str_alpha_0 = min(str_alpha_0, (a_u - tau*(a_u - a_l)))
                 a_0 = str_alpha_0
             lc = LC(a_0, a_l) 
             rc = RC(a_0, a_l) 
-        #print("Return from inexact line_search: ", a_0," - ", get_alpha_points(a_0)) 
-        return a_0 #get_alpha_points(a_0)
+        return a_0 
