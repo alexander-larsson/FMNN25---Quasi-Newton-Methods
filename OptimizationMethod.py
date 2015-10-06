@@ -9,6 +9,7 @@ class OptimizationMethod:
 
     def __init__(self,optimization_problem):
         self.problem = optimization_problem
+        self.res = .000005
 
 
     def get_gradient(self, function, point):
@@ -18,8 +19,7 @@ class OptimizationMethod:
         function = the function
         point = the point where we evaluate the gradient
         """
-
-        res = .000005
+        res = self.res
         n = len(point)
         x = np.empty((n,3))
         for i in range(n):
@@ -32,9 +32,9 @@ class OptimizationMethod:
         # element[1][1] should maybe be something else
         result = [element[1][1] for element in reversed(gx)]
         return np.array(result)
-    
+
     def get_hessian(self, function, point, grad=None):
-        res = .0000005
+        res = self.res
         n = len(point)
         if grad is None:
             fx = self.get_gradient(function,point)
