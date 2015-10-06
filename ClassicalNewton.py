@@ -10,7 +10,9 @@ class ClassicalNewton(OptimizationMethod):
 
     def classic_newton_method(self, initial_guess):
         def gradient_is_zero(gradient):
-            return np.allclose(gradient,np.zeros((1,len(gradient))))
+            #return np.allclose(gradient,np.zeros((1,len(gradient))))
+            epsilon = 0.00005
+            return np.all(list(map(lambda x: np.abs(x) < epsilon,gradient)))
 
         #x_k =  np.array([1,0]) #initial guess
         if initial_guess is None:
