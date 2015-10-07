@@ -9,7 +9,7 @@ class OptimizationMethod:
 
     def __init__(self,optimization_problem):
         self.problem = optimization_problem
-        self.res = .000005
+        self.res = 0.000001
 
 
     def get_gradient(self, function, point):
