@@ -11,7 +11,7 @@ class ClassicalNewton(OptimizationMethod):
     def classic_newton_method(self, initial_guess):
         def gradient_is_zero(gradient):
             #return np.allclose(gradient,np.zeros((1,len(gradient))))
-            epsilon = 0.0000000000001
+            epsilon = 0.000001
             return np.all(list(map(lambda x: np.abs(x) < epsilon,gradient)))
 
         if initial_guess is None:
@@ -29,8 +29,8 @@ class ClassicalNewton(OptimizationMethod):
                 return x_k
             L = la.cholesky(hessian, lower=True)
             s_k = la.cho_solve((L,True),gradient)
-            #alpha_k = self.exact_line_search(x_k, s_k) # self.problem.grad)
-            alpha_k = self.inexact_line_search(x_k, s_k,self.problem.grad)
+            alpha_k = self.exact_line_search(x_k, s_k) # self.problem.grad)
+            #alpha_k = self.inexact_line_search(x_k, s_k,self.problem.grad)
             x_k_prev = x_k
             x_k = x_k - alpha_k*s_k
             gradient = self.get_gradient(self.problem.obj_func,x_k)
@@ -122,3 +122,4 @@ class ClassicalNewton(OptimizationMethod):
             lc = LCWP(a_0, a_l)
             rc = RCWP(a_0, a_l)
         return a_0
+
