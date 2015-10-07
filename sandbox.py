@@ -8,4 +8,4 @@ problem = OptimizationProblem(Rosenbrock)
 
 method = ClassicalNewton(problem)
 
-print(method.solve((-1.2,0)))
+print(method.solve((0,0)))
