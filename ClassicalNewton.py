@@ -29,8 +29,8 @@ class ClassicalNewton(OptimizationMethod):
                 return x_k
             L = la.cholesky(hessian, lower=True)
             s_k = la.cho_solve((L,True),gradient)
-            alpha_k = self.exact_line_search(x_k, s_k) # self.problem.grad)
-            #alpha_k = self.inexact_line_search(x_k, s_k,self.problem.grad)
+           # alpha_k = self.exact_line_search(x_k, s_k) # self.problem.grad)
+            alpha_k = self.inexact_line_search(x_k, s_k,self.problem.grad)
             x_k_prev = x_k
             x_k = x_k - alpha_k*s_k
             gradient = self.get_gradient(self.problem.obj_func,x_k)
@@ -46,18 +46,14 @@ class ClassicalNewton(OptimizationMethod):
 
     def _create_f_alpha_(self, x_k,s_k):
         def points(alpha):
-            return self.problem.obj_func(*(x_k + alpha*s_k))
+            return self.problem.obj_func(*(x_k - alpha*s_k))
         return points
 
     def f_prim(self, f_alpha):
         def val(a):
             #res = 1
             res = 0.000001
-            #This is correct but doesn't work, and also causes divide-by-zero errors
-#            return (f_alpha(a+res) - f_alpha(a)) /res
-
-            #This is wrong, but it works.
-            return (f_alpha(a) + f_alpha(a + res)) / res
+            return (f_alpha(a+res) - f_alpha(a)) /res
 
         return val
 
