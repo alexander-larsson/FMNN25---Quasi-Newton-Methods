@@ -119,6 +119,6 @@ class ClassicalNewton(OptimizationMethod):
                 #str_alpha_0 = min(str_alpha_0, (a_u - tau*(a_u - a_l)))
                 str_alpha_0 = np.min([str_alpha_0,a_u - tau*(a_u - a_l)])
                 a_0 = str_alpha_0
-            lc = LC(a_0, a_l)
-            rc = RC(a_0, a_l)
+            lc = LCWP(a_0, a_l)
+            rc = RCWP(a_0, a_l)
         return a_0
