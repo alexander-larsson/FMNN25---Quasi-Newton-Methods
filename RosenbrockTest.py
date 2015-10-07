@@ -67,6 +67,10 @@ class exactLineSearchTestCase(ut.TestCase):
 		op = ClassicalNewton(problem)
 		res = op.solve((2,2))
 		np.testing.assert_almost_equal(self.ros_res, res)
+    def testRosenBrockWithEasyInitialGuessAndSuppliedGradient(self):
+		problem = OptimizationProblem(f, grad)
+		op = ClassicalNewton(problem)
+		res = op.solve((2, 2))
     def testRosenBrockWithHardInitialGuess(self):
 		problem = OptimizationProblem(f)
 		op = ClassicalNewton(problem)
