@@ -15,7 +15,7 @@ class ClassicalNewton(OptimizationMethod):
             return np.all(list(map(lambda x: np.abs(x) < epsilon,gradient)))
 
         if initial_guess is None:
-            x_k = np.zeros(self.problem.obj_func.func_code.co_argcount)
+            x_k = np.zeros(self.problem.obj_func.__code__.co_argcount)
         else:
             x_k = np.array(initial_guess)
         gradient = []
