@@ -32,11 +32,10 @@ grad = [df_dx,df_dy]
 def manual_hessian(x,y):
     return [[df_dx2(x,y), df_dxy(x,y)],[df_dxy(x,y), df_dy2(x,y)]]
 
-class exactLineSearchTestCase(ut.TestCase):
+class simpleGradientAndHessianTestCase(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
         self.man_hess = manual_hessian(1,2)
-        self.ros_res = (1,1)
     def testCalculatedGradient(self):
         problem = OptimizationProblem(f)
         op = ClassicalNewton(problem)
@@ -57,122 +56,86 @@ class exactLineSearchTestCase(ut.TestCase):
         op = ClassicalNewton(problem)
         hessian = op.get_hessian(f, (1,2))
         np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
+        
+class exactLineSearchTestCase(ut.TestCase):
+    def setUp(self):
+        self.ros_res = (1,1)
     def testRosenBrockWithStandardInitialGuess(self):
         problem = OptimizationProblem(f)
         op = ClassicalNewton(problem)
-        res = op.solve()
+        res = op.solve(search='exact')
         np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithEasyInitialGuess(self):
         problem = OptimizationProblem(f)
         op = ClassicalNewton(problem)
-        res = op.solve((2,2))
+        res = op.solve((2,2), search='exact')
         np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithEasyInitialGuessAndSuppliedGradient(self):
         problem = OptimizationProblem(f, grad)
         op = ClassicalNewton(problem)
-        res = op.solve((2, 2))
+        res = op.solve((2, 2), search='exact')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithHardInitialGuess(self):
         problem = OptimizationProblem(f)
         op = ClassicalNewton(problem)
-        res = op.solve((-1.2, 1))
+        res = op.solve((-1.2, 1), search='exact')
         np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithHardInitialGuessAndSuppliedGradient(self):
         problem = OptimizationProblem(f, grad)
         op = ClassicalNewton(problem)
-        res = op.solve((-1.2, 1))
+        res = op.solve((-1.2, 1), search='exact')
         np.testing.assert_almost_equal(self.ros_res, res)
-    """
+    
 class inexactGoldsteinLineSearchTestCase(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
         self.man_hess = manual_hessian(1,2)
         self.ros_res = (1,1)
-    def testCalculatedGradient(self):
-        problem = OptimizationProblem(f)
-        op = ClassicalNewton(problem,gs)
-        gradient = op.get_gradient(f, (1,2))
-        np.testing.assert_allclose(gradient, self.man_gradient)
-    def testSuppliedGradient(self):
-		problem = OptimizationProblem(f, grad);
-		op = ClassicalNewton(problem,gs)
-		gradient = op.get_gradient(f, (1,2))
-		np.testing.assert_allclose(gradient, self.man_gradient)
-    def testHessianFunctionWithoutGradient(self):
-		problem = OptimizationProblem(f, grad)
-		op = ClassicalNewton(problem,gs)
-		hessian = op.get_hessian(f, (1,2))
-		np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
-    def testHessianFunctionWithGradient(self):
-		problem = OptimizationProblem(f, grad);
-		op = ClassicalNewton(problem,gs)
-		hessian = op.get_hessian(f, (1,2))
-		np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
     def testRosenBrockWithStandardInitialGuess(self):
-		problem = OptimizationProblem(f)
-		op = ClassicalNewton(problem,gs)
-		res = op.solve()
-		np.testing.assert_almost_equal(self.ros_res, res)
+        problem = OptimizationProblem(f)
+        op = ClassicalNewton(problem)
+        res = op.solve(search='inexact', cond = 'GS')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithEasyInitialGuess(self):
-		problem = OptimizationProblem(f)
-		op = ClassicalNewton(problem,gs)
-		res = op.solve((2,2))
-		np.testing.assert_almost_equal(self.ros_res, res)
+        problem = OptimizationProblem(f)
+        op = ClassicalNewton(problem)
+        res = op.solve((2,2), search='inexact', cond = 'GS')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithHardInitialGuess(self):
-		problem = OptimizationProblem(f)
-		op = ClassicalNewton(problem,gs)
-		res = op.solve((-1.2, 1))
-		np.testing.assert_almost_equal(self.ros_res, res)
+        problem = OptimizationProblem(f)
+        op = ClassicalNewton(problem)
+        res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithHardInitialGuessAndSuppliedGradient(self):
-		problem = OptimizationProblem(f, grad)
-		op = ClassicalNewton(problem,gs)
-		res = op.solve((-1.2, 1))
-		np.testing.assert_almost_equal(self.ros_res, res)
-class inexactWolfePowellLineSearchTestCase:
+        problem = OptimizationProblem(f, grad)
+        op = ClassicalNewton(problem)
+        res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
+        np.testing.assert_almost_equal(self.ros_res, res)
+class inexactWolfePowellLineSearchTestCase(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
         self.man_hess = manual_hessian(1,2)
         self.ros_res = (1,1)
-    def testCalculatedGradient(self):
-        problem = OptimizationProblem(f)
-        op = ClassicalNewton(problem,wp)
-        gradient = op.get_gradient(f, (1,2))
-        np.testing.assert_allclose(gradient, self.man_gradient)
-    def testSuppliedGradient(self):
-		problem = OptimizationProblem(f, grad);
-		op = ClassicalNewton(problem,wp)
-		gradient = op.get_gradient(f, (1,2))
-		np.testing.assert_allclose(gradient, self.man_gradient)
-    def testHessianFunctionWithoutGradient(self):
-		problem = OptimizationProblem(f, grad)
-		op = ClassicalNewton(problem,wp)
-		hessian = op.get_hessian(f, (1,2))
-		np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
-    def testHessianFunctionWithGradient(self):
-		problem = OptimizationProblem(f, grad);
-		op = ClassicalNewton(problem,wp)
-		hessian = op.get_hessian(f, (1,2))
-		np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
     def testRosenBrockWithStandardInitialGuess(self):
-		problem = OptimizationProblem(f)
-		op = ClassicalNewton(problem,wp)
-		res = op.solve()
-		np.testing.assert_almost_equal(self.ros_res, res)
+        problem = OptimizationProblem(f)
+        op = ClassicalNewton(problem)
+        res = op.solve(search='inexact', cond = 'WP')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithEasyInitialGuess(self):
-		problem = OptimizationProblem(f)
-		op = ClassicalNewton(problem,wp)
-		res = op.solve((2,2))
-		np.testing.assert_almost_equal(self.ros_res, res)
+        problem = OptimizationProblem(f)
+        op = ClassicalNewton(problem)
+        res = op.solve((2,2), search='inexact', cond = 'WP')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithHardInitialGuess(self):
-		problem = OptimizationProblem(f)
-		op = ClassicalNewton(problem,wp)
-		res = op.solve((-1.2, 1))
-		np.testing.assert_almost_equal(self.ros_res, res)
+        problem = OptimizationProblem(f)
+        op = ClassicalNewton(problem)
+        res = op.solve((-1.2, 1), search='inexact', cond = 'WP')
+        np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithHardInitialGuessAndSuppliedGradient(self):
-		problem = OptimizationProblem(f, grad)
-		op = ClassicalNewton(problem,wp)
-		res = op.solve((-1.2, 1))
-		np.testing.assert_almost_equal(self.ros_res, res)
-    """
-
+        problem = OptimizationProblem(f, grad)
+        op = ClassicalNewton(problem)
+        res = op.solve((-1.2, 1), search='inexact', cond = 'WP')
+        np.testing.assert_almost_equal(self.ros_res, res)
+  
 if __name__=='__main__':
     ut.main()
