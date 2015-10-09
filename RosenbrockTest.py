@@ -31,7 +31,6 @@ grad = [df_dx,df_dy]
 
 def manual_hessian(x,y):
     return [[df_dx2(x,y), df_dxy(x,y)],[df_dxy(x,y), df_dy2(x,y)]]
-
 class simpleGradientAndHessianTestCase(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
@@ -56,7 +55,6 @@ class simpleGradientAndHessianTestCase(ut.TestCase):
         op = ClassicalNewton(problem)
         hessian = op.get_hessian(f, (1,2))
         np.testing.assert_allclose(self.man_hess, hessian, 0.0001)
-        
 class exactLineSearchTestCase(ut.TestCase):
     def setUp(self):
         self.ros_res = (1,1)
@@ -68,7 +66,7 @@ class exactLineSearchTestCase(ut.TestCase):
     def testRosenBrockWithEasyInitialGuess(self):
         problem = OptimizationProblem(f)
         op = ClassicalNewton(problem)
-        res = op.solve((2,2), search='exact')
+        res = op.solve([2,2], search='exact')
         np.testing.assert_almost_equal(self.ros_res, res)
     def testRosenBrockWithEasyInitialGuessAndSuppliedGradient(self):
         problem = OptimizationProblem(f, grad)
@@ -136,6 +134,5 @@ class inexactWolfePowellLineSearchTestCase(ut.TestCase):
         op = ClassicalNewton(problem)
         res = op.solve((-1.2, 1), search='inexact', cond = 'WP')
         np.testing.assert_almost_equal(self.ros_res, res)
-  
 if __name__=='__main__':
     ut.main()

@@ -35,8 +35,6 @@ class ClassicalNewton(OptimizationMethod):
             L = la.cholesky(hessian, lower=True)
             s_k = la.cho_solve((L,True),gradient)
             alpha_k = searchMethod(x_k, s_k, cond)
-            #alpha_k = self.exact_line_search(x_k, s_k)
-            #alpha_k = self.inexact_line_search(x_k, s_k)
             x_k = x_k - alpha_k*s_k
             gradient = self.get_gradient(self.problem.obj_func,x_k)
         raise Exception("Newtons method did not converge")
@@ -86,11 +84,9 @@ class ClassicalNewton(OptimizationMethod):
         #Define initial conditions and contants
         
         if (cond.upper() == 'GS'):
-            LC = LCG
-            RC = RCG
+            LC, RC = LCG, RCG
         elif cond.upper() == 'WP':
-            LC = LCWP
-            RC = RCWP
+            LC, RC = LCWP, RCWP
         else:
             raise TypeError("Cond must be one of 'GS' or 'WP'")
         rho = r
