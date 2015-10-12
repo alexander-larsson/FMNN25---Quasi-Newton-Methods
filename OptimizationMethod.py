@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.optimize as opt
 
 class OptimizationMethod:
     """
@@ -11,29 +12,14 @@ class OptimizationMethod:
         self.problem = optimization_problem
         self.res = 0.000001
 
-
-    def get_gradient1(self, function, point):
-        """
-        Gradient for any kind of funtion
-        Parameters:
-        function = the function
-        point = the point where we evaluate the gradient
-        """
-        res = self.res
-        n = len(point)
-        x = np.empty((n,3))
-        for i in range(n):
-            xi = point[i]
-            x[i] = [xi-res,xi,xi+res]
-        X = np.meshgrid(*x)
-
-        zs = np.array([function(*x) for x in zip(*map(np.ravel,X))])
-
-        Z = zs.reshape(X[0].shape)
-        gx = np.gradient(Z,res,res)
-        # element[1][1] should maybe be something else
-        result = [element[1][1] for element in reversed(gx)]
-        return np.array(result)
+    def solve(self, initial_guess=None, search="inexact", cond="GS"):
+        if (search.lower() == "inexact"):
+            searchMethod = self.inexact_line_search
+        elif search.lower() == "exact":
+            searchMethod = self.exact_line_search
+        else:
+            raise TypeError("search must be one of 'exact' or 'inexact'")
+        return self.newton_iteration(initial_guess, searchMethod, cond)
 
     def get_gradient(self,function, point):
         """
@@ -82,3 +68,77 @@ class OptimizationMethod:
                 hessian[i][j] = (fplush[j][i] - fx[i])/res
         hessian = (hessian + np.transpose(hessian))/2
         return hessian
+
+    def exact_line_search(self,x_k, s_k, cond=None):
+        """While exact line search doesn't care about a condition, we include
+        it in order to ease up the manipulation of the line search method"""
+        f = self.problem.obj_func
+        def alpha_f(alpha):
+            return f(*(x_k - alpha*s_k))
+        return opt.minimize_scalar(alpha_f).x
+
+    def _create_f_alpha_(self, x_k,s_k):
+        def points(alpha):
+            return self.problem.obj_func(*(x_k - alpha*s_k))
+        return points
+
+    def f_prim(self, f_alpha):
+        def val(a):
+            res = 0.001
+            return (f_alpha(a+res) - f_alpha(a)) /res
+        return val
+
+    def inexact_line_search(self, x_k, s_k, cond, r=0.1, s = 0.7, t=0.1, c = 9):
+        #Helper functions
+        def LCG(a_0, a_l):
+            return f_alpha(a_0) >= (f_alpha(a_l) + (1-rho)*(a_0 - a_l)*f_grad(a_l))
+        def RCG(a_0, a_l):
+            return f_alpha(a_0) <= (f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l))
+        def LCWP(a_0, a_l):
+            return f_grad(a_0) >= sigma*f_grad(a_l)
+        def RCWP(a_0, a_l):
+            return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
+        def extrapolation(a_0,a_l):
+            return (a_0 - a_l)*(f_grad(a_0) / (f_grad(a_l) - f_grad(a_0)))
+        def interpolation(a_0,a_l):
+            gradient_l = f_grad(a_l)
+            f_l = f_alpha(a_l)
+            f_0 = f_alpha(a_0)
+            return (a_0 - a_l)**2*gradient_l / (2*(f_l - f_0 + (a_0 - a_l)*gradient_l))
+        #Define initial conditions and contants
+
+        if (cond.upper() == 'GS'):
+            LC, RC = LCG, RCG
+        elif cond.upper() == 'WP':
+            LC, RC = LCWP, RCWP
+        else:
+            raise TypeError("Cond must be one of 'GS' or 'WP'")
+        rho = r
+        sigma = s
+        tau = t
+        chi = c
+        a_0 = 1
+        f_alpha = self._create_f_alpha_(x_k,s_k)
+        f_grad = self.f_prim(f_alpha)
+
+
+        a_l = 0
+        a_u = 10**99
+        lc = LC(a_0, a_l)
+        rc = RC(a_0, a_l)
+        while not (lc and rc):
+            if not lc:
+                d_alpha_0 = extrapolation(a_0, a_l)
+                d_alpha_0 = np.max([d_alpha_0,tau*(a_0 - a_l)])
+                d_alpha_0 = np.min([d_alpha_0,chi*(a_0 - a_l)])
+                a_l = a_0
+                a_0 = a_0 + d_alpha_0
+            else:
+                a_u = np.min([a_0,a_u])
+                str_alpha_0 = interpolation(a_0, a_l)
+                str_alpha_0 = np.max([str_alpha_0,a_l + tau*(a_u-a_l)])
+                str_alpha_0 = np.min([str_alpha_0,a_u - tau*(a_u - a_l)])
+                a_0 = str_alpha_0
+            lc = LC(a_0, a_l)
+            rc = RC(a_0, a_l)
+        return a_0

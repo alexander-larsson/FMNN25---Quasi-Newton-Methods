@@ -1,4 +1,4 @@
-from ClassicalNewton import *
+from QuasiNewton import *
 from OptimizationProblem import *
 
 def Rosenbrock(x,y):
@@ -6,6 +6,6 @@ def Rosenbrock(x,y):
 
 problem = OptimizationProblem(Rosenbrock)
 
-method = ClassicalNewton(problem)
+method = QuasiNewton(problem)
 
 print(method.solve((0,0)))
