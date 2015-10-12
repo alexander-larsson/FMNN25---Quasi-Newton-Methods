@@ -35,6 +35,25 @@ class OptimizationMethod:
         result = [element[1][1] for element in reversed(gx)]
         return np.array(result)
 
+    def get_gradient1(self,function, point):
+        ## Works but is suuuuuuuuuuuuuper slow
+        """
+        Gradient for any kind of funtion
+        Parameters:
+        function = the function
+        point = the point where we evaluate the gradient
+        """
+        res = 0.0000000001
+        n = len(point)
+        fx = function(*point)
+        gradient = np.empty(n)
+        for i in range(n):
+            x = list(point) # Make a copy
+            x[i] += res
+            fplush = function(*x)
+            gradient[i] = (fplush - fx)/res
+        return gradient
+
     def get_hessian(self, function, point, grad=None):
         """
         Hessian for any function

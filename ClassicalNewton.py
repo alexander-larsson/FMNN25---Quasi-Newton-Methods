@@ -63,7 +63,7 @@ class ClassicalNewton(OptimizationMethod):
 
 
 
-    #x_k, s_k as usual. LC is 
+    #x_k, s_k as usual. LC is
     def inexact_line_search(self, x_k, s_k, cond, r=0.1, s = 0.7, t=0.1, c = 9):
         #Helper functions
         def LCG(a_0, a_l):
@@ -82,7 +82,7 @@ class ClassicalNewton(OptimizationMethod):
             f_0 = f_alpha(a_0)
             return (a_0 - a_l)**2*gradient_l / (2*(f_l - f_0 + (a_0 - a_l)*gradient_l))
         #Define initial conditions and contants
-        
+
         if (cond.upper() == 'GS'):
             LC, RC = LCG, RCG
         elif cond.upper() == 'WP':
@@ -118,4 +118,3 @@ class ClassicalNewton(OptimizationMethod):
             lc = LC(a_0, a_l)
             rc = RC(a_0, a_l)
         return a_0
-

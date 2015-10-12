@@ -15,7 +15,9 @@ class chebyquadTest(ut.TestCase):
         self.x = linspace(0,1,8)
         self.expected = so.fmin_bfgs(chebyquad,x,gradchebyquad)
     def testChebyquadWithExactLinesearchAndEstimatedGradient(self):
-        problem = OptimizationProblem(chebyquad)
+        def chebyquad_wrapper(*x):
+            return chebyquad(x)
+        problem = OptimizationProblem(chebyquad_wrapper)
        # gradient = gradchebyquad
         op = ClassicalNewton(problem)
         x = linspace(0,1,8)

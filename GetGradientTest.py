@@ -55,6 +55,24 @@ def get_gradient2(function,*point):
     result = [element[1][1] for element in reversed(gx)]
     return np.array(result)
 
+def get_gradient3(function,*point):
+    """
+    Gradient for any kind of funtion
+    Parameters:
+    function = the function
+    point = the point where we evaluate the gradient
+    """
+    res = 0.000001
+    n = len(point)
+    fx = function(*point)
+    gradient = np.empty(n)
+    for i in range(n):
+        x = list(point) # Make a copy
+        x[i] += res
+        fplush = function(*x)
+        gradient[i] = (fplush - fx)/res
+    return gradient
+
 def get_hessian(function,x0,y0):
     """
     Returns the hessian
@@ -114,6 +132,7 @@ def manual_hessian(x,y):
 #print("New hessian")
 #print(get_hessian2(f,1,2))
 
-point = (0,0)
+point = (15,15)
+print(get_gradient3(f,*point))
 print(get_gradient2(f,*point))
 print(str(df_dx(*point)) + " " + str(df_dy(*point)))
