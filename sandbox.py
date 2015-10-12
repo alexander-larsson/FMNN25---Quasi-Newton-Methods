@@ -6,6 +6,6 @@ def Rosenbrock(x,y):
 
 problem = OptimizationProblem(Rosenbrock)
 
-method = QuasiNewton(problem)
+method = GoodBroyden(problem)
 
-print(method.solve((0,0)))
+print(method.solve((1,0)))
