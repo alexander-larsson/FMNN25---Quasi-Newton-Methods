@@ -45,3 +45,15 @@ class GoodBroyden(QuasiNewton):
         #a = 1/(u.dot(gamma))
         a = 1 / np.dot(u.T,gamma)
         return inv_hessian + a * np.dot(u,u.T)
+
+class BadBroyden(QuasiNewton):
+    def next_inv_hessian(self,delta,gamma,inv_hessian):
+        return inv_hessian + np.dot(((delta - np.dot(inv_hessian,gamma)) / np.dot(gamma.T,gamma)),gamma.T)
+
+class DFP(QuasiNewton):
+    def next_inv_hessian(self,delta,gamma,inv_hessian):
+        pass
+
+class BFGS(QuasiNewton):
+    def next_inv_hessian(self,delta,gamma,inv_hessian):
+        pass
