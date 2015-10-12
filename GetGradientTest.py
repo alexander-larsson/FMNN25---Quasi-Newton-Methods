@@ -64,13 +64,14 @@ def get_gradient3(function,*point):
     """
     res = 0.000001
     n = len(point)
-    fx = function(*point)
     gradient = np.empty(n)
     for i in range(n):
         x = list(point) # Make a copy
-        x[i] += res
+        x[i] += res/2
         fplush = function(*x)
-        gradient[i] = (fplush - fx)/res
+        x[i] -= res
+        fminush = function(*x)
+        gradient[i] = (fplush - fminush)/res
     return gradient
 
 def get_hessian(function,x0,y0):
