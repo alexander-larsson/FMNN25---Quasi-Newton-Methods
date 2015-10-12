@@ -35,7 +35,13 @@ class ClassicalNewton(OptimizationMethod):
             L = la.cholesky(hessian, lower=True)
             s_k = la.cho_solve((L,True),gradient)
             alpha_k = searchMethod(x_k, s_k, cond)
+            x_k_old = x_k;
             x_k = x_k - alpha_k*s_k
+            x_k_new = x_k;
+            delta = x_k_new - x_k_old;
+            gamma = (self.get_gradient(self.problem.obj_func,x_k_old)) -(self.get_gradient(self.problem.obj_func,x_k_new))
+            #Kommentera bort raden nedan för att ej köra goodBroyden
+            hessian = self.goodBroyden(delta,gamma,hessian);
             gradient = self.get_gradient(self.problem.obj_func,x_k)
         raise Exception("Newtons method did not converge")
 
@@ -47,6 +53,13 @@ class ClassicalNewton(OptimizationMethod):
         def alpha_f(alpha):
             return f(*(x_k - alpha*s_k))
         return opt.minimize_scalar(alpha_f).x
+
+    def goodBroyden(self,delta,gamma,hessian):
+        u = delta - np.dot(hessian,gamma);
+        #a = 1/(u.dot(gamma));
+        a = 1/np.dot(np.transpose(u),gamma);
+        hessian = hessian + a*np.dot(u,np.transpose(u));
+        return hessian
 
 
     def _create_f_alpha_(self, x_k,s_k):
