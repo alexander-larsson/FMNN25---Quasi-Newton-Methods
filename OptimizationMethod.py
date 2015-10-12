@@ -42,7 +42,8 @@ class OptimizationMethod:
         function = the function
         point = the point where we evaluate the gradient
         """
-        res = self.res
+        #res = self.res
+        res = 0.000003
         n = len(point)
         gradient = np.empty(n)
         for i in range(n):
