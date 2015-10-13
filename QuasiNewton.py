@@ -13,8 +13,6 @@ class QuasiNewton(OptimizationMethod):
             x_k = np.zeros(self.problem.obj_func.__code__.co_argcount)
         else:
             x_k = np.array(initial_guess)
-#        hessian = self.get_hessian(self.problem.obj_func, x_k)
-#       inv_hessian = np.linalg.inv(hessian)
         inv_hessian = np.eye(len(x_k))
         if self.problem.grad is None:
             gradient = self.get_gradient(self.problem.obj_func,x_k)
@@ -34,8 +32,7 @@ class QuasiNewton(OptimizationMethod):
             inv_hessian = self.next_inv_hessian(delta,gamma,inv_hessian)
             gradient = gradient_new
             x_k = x_k_new
-        return x_k
-        #raise Exception("Newtons method did not converge")
+        raise Exception("Newtons method did not converge")
 
 class GoodBroyden(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
@@ -45,8 +42,7 @@ class GoodBroyden(QuasiNewton):
 
 class BadBroyden(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        part2 = (gamma - np.dot(inv_hessian, delta))/np.dot(delta.T, delta)
-        return inv_hessian + np.dot(part2,delta.T)
+        return inv_hessian + np.dot((gamma - np.dot(inv_hessian,delta)) / np.dot(delta.T,delta),delta.T)
 
 class DFP(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):

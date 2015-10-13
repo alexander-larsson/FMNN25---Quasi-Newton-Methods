@@ -81,11 +81,11 @@ class goodBroydenTest(ut.TestCase):
 #     def setUp(self):
 #         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
 #         self.ros_res = (1,1)
-    # def testBadBroydenWithStandardInitialGuess(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BadBroyden(problem)
-    #     res = op.solve(search='exact')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
+#     def testBadBroydenWithStandardInitialGuess(self):
+#         problem = OptimizationProblem(f)
+#         op = BadBroyden(problem)
+#         res = op.solve(search='exact')
+#         np.testing.assert_almost_equal(self.ros_res, res)
     # def testBadBroydenWithEasyInitialGuess(self):
     #     problem = OptimizationProblem(f)
     #     op = BadBroyden(problem)
