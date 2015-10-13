@@ -6,7 +6,7 @@ import scipy.optimize as opt
 class QuasiNewton(OptimizationMethod):
     def newton_iteration(self, initial_guess, searchMethod, cond):
         def gradient_is_zero(gradient):
-            epsilon = 0.0000001
+            epsilon = 0.000001
             return la.norm(gradient) < epsilon
 
         if initial_guess is None:
@@ -38,7 +38,6 @@ class QuasiNewton(OptimizationMethod):
 
 class GoodBroyden(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        # Will make this work then move to other class
         u = delta - np.dot(inv_hessian,gamma)
         a = 1 / np.dot(u.T,gamma)
         return inv_hessian + a * (np.dot(u,u.T))
