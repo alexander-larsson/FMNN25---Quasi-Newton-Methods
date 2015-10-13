@@ -44,7 +44,7 @@ class QuasiNewton(OptimizationMethod):
             x_k = x_k_new
         raise Exception("Newtons method did not converge")
 
-class GoodBroyden(QuasiNewton):
+class GoodBroyden((QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
         # Good broyden
         # Will make this work then move to other class
@@ -60,13 +60,16 @@ class BadBroyden(QuasiNewton):
 
 class DFP(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        part2 = (np.dot(delta,delta.T)) / (np.dot(delta.T,gamma))
-        part3 = (inv_hessian*np.dot(delta,delta.T)*inv_hessian) / (np.dot(gamma.T,inv_hessian*gamma))
+#        part2 = (np.dot(delta,delta.T)) / (np.dot(delta.T,gamma))
+#part3 = (inv_hessian*np.dot(delta,delta.T)*inv_hessian) / (np.dot(gamma.T,inv_hessian*gamma))
+        part2 = delta.dot(delta.T) / delta.T.dot(gamma)
+	part3 = inv_hessian.dot(delta).dot(delta.T).dot(inv_hessian) / gamma.T.dot(inv_hessian).dot(gamma)
         return inv_hessian + part2 + part3
 
 class BFGS(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        part2 = 1. + np.dot(np.dot(gamma.T,inv_hessian),gamma)/(np.dot(delta.T,gamma))
-        part3 = np.dot(delta,delta.T) / np.dot(delta.T,gamma)
+# part2 = 1. + np.dot(np.dot(gamma.T,inv_hessian),gamma)/(np.dot(delta.T,gamma))
+	part2 = 1. + gamma.dot(gamma.T).dot(inv_hessian)/ delta.T.dot(gamma)
+        part3 = delta,delta.T) / np.dot(delta.T,gamma)
         part4 = (np.dot(np.dot(delta,gamma.T),inv_hessian) + np.dot(np.dot(inv_hessian,gamma),delta.T)) / np.dot(delta.T,gamma)
         return inv_hessian + part2 * part3 - part4
