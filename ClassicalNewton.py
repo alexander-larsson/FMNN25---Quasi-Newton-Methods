@@ -7,8 +7,8 @@ class ClassicalNewton(OptimizationMethod):
     def newton_iteration(self, initial_guess, searchMethod, cond):
 
         def gradient_is_zero(gradient):
-            epsilon = 0.00000001
-            return np.all(list(map(lambda x: np.abs(x) < epsilon,gradient)))
+            epsilon = 0.0000001
+            return la.norm(gradient) < epsilon
 
         if initial_guess is None:
             x_k = np.zeros(self.problem.obj_func.__code__.co_argcount)

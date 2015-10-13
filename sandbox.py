@@ -6,6 +6,6 @@ def Rosenbrock(x,y):
 
 problem = OptimizationProblem(Rosenbrock)
 
-method = GoodBroyden(problem)
+method = BFGS(problem)
 
-print(method.solve((15,15)))
+print(method.solve((-1.2,1)))

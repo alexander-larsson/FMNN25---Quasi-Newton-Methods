@@ -6,9 +6,10 @@ import scipy.optimize as opt
 class QuasiNewton(OptimizationMethod):
 
     def newton_iteration(self, initial_guess, searchMethod, cond):
+
         def gradient_is_zero(gradient):
-            epsilon = 0.00000001
-            return np.all(list(map(lambda x: np.abs(x) < epsilon,gradient)))
+            epsilon = 0.0000001
+            return la.norm(gradient) < epsilon
 
         if initial_guess is None:
             x_k = np.zeros(self.problem.obj_func.__code__.co_argcount)
@@ -31,8 +32,8 @@ class QuasiNewton(OptimizationMethod):
                 alpha_k = 0.0000001
             x_k_new = x_k - alpha_k*s_k
             ## Hack
-            if np.all(x_k_new == x_k):
-                x_k_new += 0.0000001
+            #if np.all(x_k_new == x_k):
+            #    x_k_new += 0.0000001
             print("xk",x_k,"new xk",x_k_new)
             gradient_new = self.get_gradient(self.problem.obj_func,x_k_new)
             delta = (np.array(x_k_new) - np.array(x_k)).reshape(len(x_k), 1)
@@ -65,7 +66,7 @@ class DFP(QuasiNewton):
 
 class BFGS(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        part2 = (1 + (np.dot(gamma.T,inv_hessian*gamma))/(np.dot(gamma.T,delta)))
-        part3 = (np.dot(gamma,gamma.T)) / (np.dot(gamma.T,delta))
-        part4 = ((np.dot(delta,gamma.T)*inv_hessian) + inv_hessian*(np.dot(delta,gamma.T))) / (np.dot(gamma.T,delta))
-        return inv_hessian + part2*part3 - part4
+        part2 = 1. + np.dot(np.dot(gamma.T,inv_hessian),gamma)/(np.dot(delta.T,gamma))
+        part3 = np.dot(delta,delta.T) / np.dot(delta.T,gamma)
+        part4 = (np.dot(np.dot(delta,gamma.T),inv_hessian) + np.dot(np.dot(inv_hessian,gamma),delta.T)) / np.dot(delta.T,gamma)
+        return inv_hessian + part2 * part3 - part4

@@ -100,8 +100,9 @@ class OptimizationMethod:
             return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
         def extrapolation(a_0,a_l):
             A = f_grad(a_l) - f_grad(a_0)
-            if A == 0:
-                A = 0.0000001
+            #Hack
+            #if A < 0.00000001:
+            #    A = 0.00000001
             return (a_0 - a_l)*(f_grad(a_0) / A)
         def interpolation(a_0,a_l):
             gradient_l = f_grad(a_l)

@@ -83,7 +83,7 @@ class exactLineSearchTestCase(ut.TestCase):
         op = ClassicalNewton(problem)
         res = op.solve((-1.2, 1), search='exact')
         np.testing.assert_almost_equal(self.ros_res, res)
-    
+
 class inexactGoldsteinLineSearchTestCase(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
