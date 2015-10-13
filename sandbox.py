@@ -8,4 +8,4 @@ problem = OptimizationProblem(Rosenbrock)
 
 method = GoodBroyden(problem)
 
-print(method.solve((1,0)))
+print(method.solve((15,15)))

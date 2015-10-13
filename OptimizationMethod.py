@@ -84,7 +84,7 @@ class OptimizationMethod:
 
     def f_prim(self, f_alpha):
         def val(a):
-            res = 0.001
+            res = self.res
             return (f_alpha(a+res) - f_alpha(a)) /res
         return val
 
@@ -99,7 +99,10 @@ class OptimizationMethod:
         def RCWP(a_0, a_l):
             return f_alpha(a_0) <= f_alpha(a_l) + rho*(a_0 - a_l)*f_grad(a_l)
         def extrapolation(a_0,a_l):
-            return (a_0 - a_l)*(f_grad(a_0) / (f_grad(a_l) - f_grad(a_0)))
+            A = f_grad(a_l) - f_grad(a_0)
+            if A == 0:
+                A = 0.0000001
+            return (a_0 - a_l)*(f_grad(a_0) / A)
         def interpolation(a_0,a_l):
             gradient_l = f_grad(a_l)
             f_l = f_alpha(a_l)

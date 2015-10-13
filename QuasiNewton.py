@@ -24,13 +24,19 @@ class QuasiNewton(OptimizationMethod):
         for _ in range(10000):
             if gradient_is_zero(gradient):
                 return x_k
-            #L = la.cholesky(hessian, lower=True)
-            #s_k = la.cho_solve((L,True),gradient)
             s_k = np.dot(inv_hessian, gradient)
             alpha_k = searchMethod(x_k, s_k, cond)
+            ## Hack
+            if alpha_k < 0.0000001:
+                alpha_k = 0.0000001
             x_k_new = x_k - alpha_k*s_k
+            ## Hack
+            if np.all(x_k_new == x_k):
+                x_k_new += 0.0000001
+            print("xk",x_k,"new xk",x_k_new)
             gradient_new = self.get_gradient(self.problem.obj_func,x_k_new)
             delta = (np.array(x_k_new) - np.array(x_k)).reshape(len(x_k), 1)
+            print("grad",gradient,"new gradient",gradient_new)
             gamma = (gradient_new - gradient).reshape(len(x_k), 1)
             inv_hessian = self.next_inv_hessian(delta,gamma,inv_hessian)
             gradient = gradient_new
@@ -43,6 +49,7 @@ class GoodBroyden(QuasiNewton):
         # Will make this work then move to other class
         u = delta - np.dot(inv_hessian,gamma)
         #a = 1/(u.dot(gamma))
+        print("u",u.T,"gamma",gamma)
         a = 1 / np.dot(u.T,gamma)
         return inv_hessian + a * np.dot(u,u.T)
 
@@ -52,8 +59,13 @@ class BadBroyden(QuasiNewton):
 
 class DFP(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        pass
+        part2 = (np.dot(delta,delta.T)) / (np.dot(delta.T,gamma))
+        part3 = (inv_hessian*np.dot(delta,delta.T)*inv_hessian) / (np.dot(gamma.T,inv_hessian*gamma))
+        return inv_hessian + part2 + part3
 
 class BFGS(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
-        pass
+        part2 = (1 + (np.dot(gamma.T,inv_hessian*gamma))/(np.dot(gamma.T,delta)))
+        part3 = (np.dot(gamma,gamma.T)) / (np.dot(gamma.T,delta))
+        part4 = ((np.dot(delta,gamma.T)*inv_hessian) + inv_hessian*(np.dot(delta,gamma.T))) / (np.dot(gamma.T,delta))
+        return inv_hessian + part2*part3 - part4
