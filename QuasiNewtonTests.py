@@ -160,12 +160,12 @@ class DFPTest(ut.TestCase):
         op = DFP(problem)
         res = op.solve(search='inexact', cond = 'GS')
         np.testing.assert_almost_equal(self.ros_res, res)
-    # Does not converge
-    # def testDFPWithEasyInitialGuessInexact(self):
-    #     problem = OptimizationProblem(f)
-    #     op = DFP(problem)
-    #     res = op.solve((2,2), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
+    # Works with WP
+    def testDFPWithEasyInitialGuessInexact(self):
+        problem = OptimizationProblem(f)
+        op = DFP(problem)
+        res = op.solve((2,2), search='inexact', cond = 'WP')
+        np.testing.assert_almost_equal(self.ros_res, res)
     # Does not converge
     # def testDFPWithHardInitialGuessInexact(self):
     #     problem = OptimizationProblem(f)
