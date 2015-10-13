@@ -10,7 +10,7 @@ class OptimizationMethod:
 
     def __init__(self,optimization_problem):
         self.problem = optimization_problem
-        self.res = 0.000001
+        self.res = 0.0000001
 
     def solve(self, initial_guess=None, search="inexact", cond="GS"):
         if (search.lower() == "inexact"):
@@ -29,7 +29,7 @@ class OptimizationMethod:
         point = the point where we evaluate the gradient
         """
         #res = self.res
-        res = 0.000003
+        res = 0.0000003
         n = len(point)
         gradient = np.empty(n)
         for i in range(n):
@@ -121,7 +121,7 @@ class OptimizationMethod:
         sigma = s
         tau = t
         chi = c
-        a_0 = 1
+        a_0 = 100
         f_alpha = self._create_f_alpha_(x_k,s_k)
         f_grad = self.f_prim(f_alpha)
 

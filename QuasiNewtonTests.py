@@ -77,55 +77,55 @@ class goodBroydenTest(ut.TestCase):
         op = GoodBroyden(problem)
         res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
         np.testing.assert_almost_equal(self.ros_res, res)
-# class badBroydenTest(ut.TestCase):
-#     def setUp(self):
-#         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
-#         self.ros_res = (1,1)
-#     def testBadBroydenWithStandardInitialGuess(self):
-#         problem = OptimizationProblem(f)
-#         op = BadBroyden(problem)
-#         res = op.solve(search='exact')
-#         np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithEasyInitialGuess(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BadBroyden(problem)
-    #     res = op.solve([2,2], search='exact')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithEasyInitialGuessAndSuppliedGradient(self):
-    #     problem = OptimizationProblem(f, grad)
-    #     op = BadBroyden(problem)
-    #     res = op.solve((2, 2), search='exact')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithHardInitialGuess(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BadBroyden(problem)
-    #     res = op.solve((-1.2, 1), search='exact')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithHardInitialGuessAndSuppliedGradient(self):
-    #     problem = OptimizationProblem(f, grad)
-    #     op = BadBroyden(problem)
-    #     res = op.solve((-1.2, 1), search='exact')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithStandardInitialGuessInexact(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BadBroyden(problem)
-    #     res = op.solve(search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithEasyInitialGuessInexact(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BadBroyden(problem)
-    #     res = op.solve((2,2), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithHardInitialGuessInexact(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BadBroyden(problem)
-    #     res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
-    # def testBadBroydenWithHardInitialGuessAndSuppliedGradientInexact(self):
-    #     problem = OptimizationProblem(f, grad)
-    #     op = BadBroyden(problem)
-    #     res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
+class badBroydenTest(ut.TestCase):
+     def setUp(self):
+         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
+         self.ros_res = (1,1)
+     def testBadBroydenWithStandardInitialGuess(self):
+         problem = OptimizationProblem(f)
+         op = BadBroyden(problem)
+         res = op.solve(search='exact')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithEasyInitialGuess(self):
+         problem = OptimizationProblem(f)
+         op = BadBroyden(problem)
+         res = op.solve([2,2], search='exact')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithEasyInitialGuessAndSuppliedGradient(self):
+         problem = OptimizationProblem(f, grad)
+         op = BadBroyden(problem)
+         res = op.solve((2, 2), search='exact')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithHardInitialGuess(self):
+         problem = OptimizationProblem(f)
+         op = BadBroyden(problem)
+         res = op.solve((-1.2, 1), search='exact')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithHardInitialGuessAndSuppliedGradient(self):
+         problem = OptimizationProblem(f, grad)
+         op = BadBroyden(problem)
+         res = op.solve((-1.2, 1), search='exact')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithStandardInitialGuessInexact(self):
+         problem = OptimizationProblem(f)
+         op = BadBroyden(problem)
+         res = op.solve(search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithEasyInitialGuessInexact(self):
+         problem = OptimizationProblem(f)
+         op = BadBroyden(problem)
+         res = op.solve((2,2), search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithHardInitialGuessInexact(self):
+         problem = OptimizationProblem(f)
+         op = BadBroyden(problem)
+         res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
+     def testBadBroydenWithHardInitialGuessAndSuppliedGradientInexact(self):
+         problem = OptimizationProblem(f, grad)
+         op = BadBroyden(problem)
+         res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
 class DFPTest(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
@@ -167,17 +167,17 @@ class DFPTest(ut.TestCase):
         res = op.solve((2,2), search='inexact', cond = 'WP')
         np.testing.assert_almost_equal(self.ros_res, res)
     # Does not converge
-    # def testDFPWithHardInitialGuessInexact(self):
-    #     problem = OptimizationProblem(f)
-    #     op = DFP(problem)
-    #     res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
+    def testDFPWithHardInitialGuessInexact(self):
+         problem = OptimizationProblem(f)
+         op = DFP(problem)
+         res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
     # Does not converge
-    # def testDFPWithHardInitialGuessAndSuppliedGradientInexact(self):
-    #     problem = OptimizationProblem(f, grad)
-    #     op = DFP(problem)
-    #     res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
+    def testDFPWithHardInitialGuessAndSuppliedGradientInexact(self):
+         problem = OptimizationProblem(f, grad)
+         op = DFP(problem)
+         res = op.solve((-1.2, 1), search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
 class BFGSTest(ut.TestCase):
     def setUp(self):
         self.man_gradient = [df_dx(1,2), df_dy(1,2)]
@@ -213,11 +213,11 @@ class BFGSTest(ut.TestCase):
         res = op.solve(search='inexact', cond = 'GS')
         np.testing.assert_almost_equal(self.ros_res, res)
     ## Converges to wrong point
-    # def testBFGSWithEasyInitialGuessInexact(self):
-    #     problem = OptimizationProblem(f)
-    #     op = BFGS(problem)
-    #     res = op.solve((2,2), search='inexact', cond = 'GS')
-    #     np.testing.assert_almost_equal(self.ros_res, res)
+    def testBFGSWithEasyInitialGuessInexact(self):
+         problem = OptimizationProblem(f)
+         op = BFGS(problem)
+         res = op.solve((2,2), search='inexact', cond = 'GS')
+         np.testing.assert_almost_equal(self.ros_res, res)
     def testBFGSWithHardInitialGuessInexact(self):
         problem = OptimizationProblem(f)
         op = BFGS(problem)

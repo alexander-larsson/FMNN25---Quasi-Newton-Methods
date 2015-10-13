@@ -18,7 +18,7 @@ class QuasiNewton(OptimizationMethod):
             gradient = self.get_gradient(self.problem.obj_func,x_k)
         else:
             gradient = [g(*x_k) for g in self.problem.grad]
-        for _ in range(100):
+        for _ in range(50):
             if gradient_is_zero(gradient):
                 return x_k
             s_k = np.dot(inv_hessian, gradient)
@@ -47,12 +47,12 @@ class BadBroyden(QuasiNewton):
 class DFP(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
         part2 = np.dot(delta, delta.T) / np.dot(delta.T, gamma)
-        part3 = np.dot(inv_hessian, np.dot(gamma, np. dot(gamma.T, inv_hessian))) / np.dot(gamma.T, np.dot(inv_hessian, gamma))
+        part3 = np.dot(inv_hessian, np.dot(gamma, np. dot(gamma.T, inv_hessian))) / np.dot(np.dot(gamma.T,inv_hessian),gamma)
         return inv_hessian + part2 - part3
 
 class BFGS(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
         part2 = 1 + np.dot(gamma.T, np.dot(inv_hessian, gamma))/np.dot(delta.T, gamma)
-        part3 = delta.dot(delta.T) / np.dot(delta.T,gamma)
+        part3 = np.dot(delta,delta.T) / np.dot(delta.T,gamma)
         part4 = (np.dot(delta, np.dot(gamma.T , inv_hessian)) + np.dot(inv_hessian, np.dot(gamma,delta.T))) / np.dot(delta.T,gamma)
         return inv_hessian + part2 * part3 - part4
