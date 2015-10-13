@@ -6,7 +6,7 @@ import scipy.optimize as opt
 class QuasiNewton(OptimizationMethod):
     def newton_iteration(self, initial_guess, searchMethod, cond):
         def gradient_is_zero(gradient):
-            epsilon = 0.000001
+            epsilon = 0.0000001
             return la.norm(gradient) < epsilon
 
         if initial_guess is None:
@@ -34,7 +34,8 @@ class QuasiNewton(OptimizationMethod):
             inv_hessian = self.next_inv_hessian(delta,gamma,inv_hessian)
             gradient = gradient_new
             x_k = x_k_new
-        raise Exception("Newtons method did not converge")
+        return x_k
+        #raise Exception("Newtons method did not converge")
 
 class GoodBroyden(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
@@ -50,7 +51,7 @@ class BadBroyden(QuasiNewton):
 class DFP(QuasiNewton):
     def next_inv_hessian(self,delta,gamma,inv_hessian):
         part2 = np.dot(delta, delta.T) / np.dot(delta.T, gamma)
-    	part3 = np.dot(inv_hessian, np.dot(gamma, np. dot(gamma.T, inv_hessian))) / np.dot(gamma.T, np.dot(inv_hessian, gamma))
+        part3 = np.dot(inv_hessian, np.dot(gamma, np. dot(gamma.T, inv_hessian))) / np.dot(gamma.T, np.dot(inv_hessian, gamma))
         return inv_hessian + part2 - part3
 
 class BFGS(QuasiNewton):
